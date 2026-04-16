@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitoria Arena Games - Unai Armendáriz Gacés</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface2: #1e2026;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #f0f1f3;
+    --muted: #7a7f8a;
+    --orange: #f97316;
+    --orange-dim: rgba(249,115,22,0.12);
+    --blue: #3b82f6;
+    --blue-dim: rgba(59,130,246,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.12);
+    --coral: #fb7185;
+    --coral-dim: rgba(251,113,133,0.12);
+    --green: #4ade80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 0;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 800;
+    letter-spacing: 0.04em; color: var(--orange);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--text); }
+  .header-sub {
+    font-size: 12px; color: var(--muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    border-left: 2px solid var(--orange); padding-left: 10px;
+  }
+  .main-tabs {
+    display: flex; gap: 2px;
+  }
+  .main-tab {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 18px;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .main-tab.active { color: var(--text); border-bottom-color: var(--orange); }
+
+  /* CONTENT */
+  .content { padding: 20px; max-width: 680px; margin: 0 auto; }
+
+  /* DAY PILLS */
+  .day-pills {
+    display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .day-pill {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 20px; padding: 6px 16px;
+    font-size: 13px; font-weight: 600;
+    color: var(--muted); cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .day-pill.active {
+    background: var(--orange-dim);
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+
+  /* WOD CARD */
+  .wod-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .wod-card:hover { border-color: var(--border2); }
+  .wod-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .wod-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .wod-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .wod-meta {
+    margin-left: auto; text-align: right;
+    font-size: 12px; color: var(--muted);
+    line-height: 1.4; flex-shrink: 0;
+  }
+  .wod-chevron {
+    margin-left: 8px; color: var(--muted); font-size: 14px;
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+  .wod-card.open .wod-chevron { transform: rotate(180deg); }
+  .wod-body {
+    padding: 16px; display: none;
+  }
+  .wod-card.open .wod-body { display: block; }
+
+  .strat-group { margin-bottom: 16px; }
+  .strat-group:last-child { margin-bottom: 0; }
+  .strat-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .strat-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; color: var(--text);
+    line-height: 1.6; margin-bottom: 6px;
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 8px;
+  }
+  .alert {
+    background: var(--surface2);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px; margin-top: 14px;
+    font-size: 13px; color: var(--muted); line-height: 1.6;
+  }
+  .alert strong { color: var(--text); font-weight: 600; }
+
+  /* NUTRITION */
+  .nut-section { margin-bottom: 20px; }
+  .nut-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .meal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 12px;
+  }
+  .meal-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .meal-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .meal-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .info-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 13px 16px;
+    margin-bottom: 10px; font-size: 14px; line-height: 1.65;
+  }
+  .info-card .ic-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+  }
+  .between-wods {
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px; padding: 13px 16px;
+    margin-bottom: 10px; font-size: 14px; line-height: 1.65;
+  }
+  .between-wods .bw-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 6px;
+  }
+  .hydration {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(45,212,191,0.08);
+    border: 1px solid rgba(45,212,191,0.2);
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: var(--muted); line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .hydration-icon { font-size: 22px; flex-shrink: 0; }
+  .hydration strong { color: var(--teal); }
+
+  .avoid-card {
+    background: rgba(251,113,133,0.07);
+    border: 1px solid rgba(251,113,133,0.18);
+    border-radius: 10px; padding: 13px 16px;
+    font-size: 13px; color: var(--muted); line-height: 1.65;
+    margin-bottom: 10px;
+  }
+  .avoid-card .av-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 6px;
+  }
+
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center; padding: 30px 20px;
+    font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+  }
+  .footer span { color: var(--orange); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">VAG<span>26</span></div>
+    <div class="header-sub">Vitoria Arena Games</div>
+  </div>
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="switchMain('strategy', this)">Estrategia WODs</button>
+    <button class="main-tab" onclick="switchMain('nutrition', this)">Nutrición</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ESTRATEGIA -->
+  <div id="tab-strategy" class="tab-section active">
+    <div class="day-pills" id="strat-pills">
+      <button class="day-pill active" onclick="switchDay('strat','sabado', this)">Sábado</button>
+      <button class="day-pill" onclick="switchDay('strat','domingo', this)">Domingo</button>
+    </div>
+
+    <!-- SABADO -->
+    <div id="strat-sabado" class="tab-section active">
+
+      <div class="wod-card open">
+        <div class="wod-header" onclick="toggleWod(this)">
+          <span class="wod-num" style="background:var(--orange-dim);color:var(--orange)">WOD 1</span>
+          <span class="wod-name">Narrow Elbows</span>
+          <div class="wod-meta">08:14<br>10 min</div>
+          <span class="wod-chevron">▼</span>
+        </div>
+        <div class="wod-body">
+          <div class="strat-group">
+            <div class="strat-label">Gimnásticos sincro</div>
+            <div class="strat-item"><span class="dot" style="background:var(--orange)"></span><span>Los 50 C2B en series cortas de 5–8 reps. Ritmo sobre velocidad — es el primer WOD del día, no te vacíes.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--orange)"></span><span>En BMU, el atleta con más solvencia lidera siempre en pista. El segundo hace las reps de 1 en 1 si hay duda — marcar el sincro arriba vale más que arriesgarse a un no-rep.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Comba pesada</div>
+            <div class="strat-item"><span class="dot" style="background:var(--orange)"></span><span>Sin relevos. Series de 50 y 20 para los mejores en comba; 40 y 30 para quienes fallan más.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Gusano</div>
+            <div class="strat-item"><span class="dot" style="background:var(--orange)"></span><span>Thrusters sincronizados al pasar el gusano por encima de la cabeza. Comunicación constante — designad una voz líder.</span></div>
+          </div>
+          <div class="alert"><strong>⚡ Aviso:</strong> Primer WOD del día, cuerpo frío. Entrada progresiva para evitar lesiones en los gimnásticos pesados.</div>
+        </div>
+      </div>
+
+      <div class="wod-card">
+        <div class="wod-header" onclick="toggleWod(this)">
+          <span class="wod-num" style="background:var(--blue-dim);color:var(--blue)">WOD 2</span>
+          <span class="wod-name">Le Tour du Vitoria</span>
+          <div class="wod-meta">11:55<br>12 + 6 min</div>
+          <span class="wod-chevron">▼</span>
+        </div>
+        <div class="wod-body">
+          <div class="strat-group">
+            <div class="strat-label">Parte 2A — I Go You Go (MF)</div>
+            <div class="strat-item"><span class="dot" style="background:var(--blue)"></span><span>Mientras una pareja trabaja en DBs, la otra está en la bici recuperando activamente. Aprovechad ese tiempo.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--blue)"></span><span>Box Step Over: no es obligatoria extensión completa arriba — ganad tiempo con el rango mínimo válido.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Parte 2B — AMRAP</div>
+            <div class="strat-item"><span class="dot" style="background:var(--blue)"></span><span>Relevos en bici cada 10–15 cals para mantener la potencia. No dejéis caer el ritmo al final.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--blue)"></span><span>Devil Press en sincro de 4: el ritmo lo marca el atleta más lento. Mejor todos juntos que uno adelantado rompiéndose.</span></div>
+          </div>
+          <div class="alert"><strong>⚡ Aviso:</strong> Llegáis con las piernas calientes del WOD 1. Controlad la cadencia en la bici — no os lancéis a tope en los primeros intervalos.</div>
+        </div>
+      </div>
+
+      <div class="wod-card">
+        <div class="wod-header" onclick="toggleWod(this)">
+          <span class="wod-num" style="background:var(--purple-dim);color:var(--purple)">WOD 3</span>
+          <span class="wod-name">Iron Grip</span>
+          <div class="wod-meta">16:10<br>8 min</div>
+          <span class="wod-chevron">▼</span>
+        </div>
+        <div class="wod-body">
+          <div class="strat-group">
+            <div class="strat-label">Parte 3A — Intervalos de 2'</div>
+            <div class="strat-item"><span class="dot" style="background:var(--purple)"></span><span>25 TTB sincro: partid en 5+5 reps. El agarre ya lleva dos WODs encima — no lo quemáis desde el inicio.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--purple)"></span><span>Clean & Jerk sincro: cargad y descargad la barra rápido entre cada pareja. La transición es donde se gana tiempo.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Parte 3B — Rep máxima en 6'</div>
+            <div class="strat-item"><span class="dot" style="background:var(--purple)"></span><span>Pareja 1: Snatch · Pareja 2: C&J. Solo una barra cargada a la vez — organizad la logística antes de empezar.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--purple)"></span><span>Cargad de forma progresiva con 2–3 intentos previos. No saltéis directamente a vuestro máximo.</span></div>
+          </div>
+          <div class="alert"><strong>⚡ Aviso:</strong> Tercer WOD y el más técnico. Agarre y espalda fatigados — técnica sobre peso. Un no-lift no puntúa.</div>
+        </div>
+      </div>
+
+    </div><!-- /strat-sabado -->
+
+    <!-- DOMINGO -->
+    <div id="strat-domingo" class="tab-section">
+
+      <div class="wod-card open">
+        <div class="wod-header" onclick="toggleWod(this)">
+          <span class="wod-num" style="background:var(--teal-dim);color:var(--teal)">WOD 4</span>
+          <span class="wod-name">Stairway to Hell</span>
+          <div class="wod-meta">Mañana<br>13 min</div>
+          <span class="wod-chevron">▼</span>
+        </div>
+        <div class="wod-body">
+          <div class="strat-group">
+            <div class="strat-label">Parejas mixtas (MF) fijas</div>
+            <div class="strat-item"><span class="dot" style="background:var(--teal)"></span><span>HSPU: trabaja solo uno a la vez. El más hábil asume más volumen para que su compañero llegue fresco a la barra.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--teal)"></span><span>OHS (punto débil): agarre muy ancho, series cortas de 3–5 reps para garantizar el paralelo sin perder postura.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--teal)"></span><span>Sincro en posición inicial: extensión total antes de cada rep. Un segundo extra vale más que un no-rep.</span></div>
+            <div class="strat-item"><span class="dot" style="background:var(--teal)"></span><span>Logística: carga y descarga obligatoria en cada relevo — designad quién carga y quién se prepara antes de empezar.</span></div>
+          </div>
+          <div class="alert"><strong>⚡ Aviso:</strong> El OHS es el cuello de botella. Series cortas y consistentes siempre ganan al intento heroico fallido.</div>
+        </div>
+      </div>
+
+      <div class="wod-card">
+        <div class="wod-header" onclick="toggleWod(this)">
+          <span class="wod-num" style="background:var(--coral-dim);color:var(--coral)">WOD 5</span>
+          <span class="wod-name">Worm Engine</span>
+          <div class="wod-meta">Mañana<br>11 min</div>
+          <span class="wod-chevron">▼</span>
+        </div>
+        <div class="wod-body">
+          <div class="strat-group">
+            <div class="strat-label">Burpees over Worm sincro (×4)</div>
+            <div class="strat-item"><span class="dot" style="background:var(--coral)"></span><span>Todos a la vez. Marcad un ritmo constante desde el inicio — el primer round define el tono de todo el WOD.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Worm Push Press</div>
+            <div class="strat-item"><span class="dot" style="background:var(--coral)"></span><span>El gusano descansa en el mismo hombro de todos. Pequeño dip de piernas y empuje explosivo y simultáneo.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Worm Hang Clean & Jerk</div>
+            <div class="strat-item"><span class="dot" style="background:var(--coral)"></span><span>Sincro en la recepción en hombros y luego en el bloqueo arriba. Dos puntos de sincro claros — comunicad ambos.</span></div>
+          </div>
+          <div class="strat-group">
+            <div class="strat-label">Worm Alternating Lunges</div>
+            <div class="strat-item"><span class="dot" style="background:var(--coral)"></span><span>Sincro cuando todos tocan con la rodilla el suelo. Misma pierna en cada repetición — decidid cuál antes de empezar.</span></div>
+          </div>
+          <div class="alert"><strong>⚡ Aviso:</strong> WOD de cierre con dos días en las piernas. La sincronización gana sobre la velocidad individual. Un equipo que va junto siempre rinde más.</div>
+        </div>
+      </div>
+
+    </div><!-- /strat-domingo -->
+  </div><!-- /tab-strategy -->
+
+
+  <!-- NUTRICION -->
+  <div id="tab-nutrition" class="tab-section">
+    <div class="day-pills" id="nut-pills">
+      <button class="day-pill active" onclick="switchDay('nut','viernes', this)">Viernes</button>
+      <button class="day-pill" onclick="switchDay('nut','sabado', this)">Sábado</button>
+      <button class="day-pill" onclick="switchDay('nut','domingo', this)">Domingo</button>
+    </div>
+
+    <!-- VIERNES -->
+    <div id="nut-viernes" class="tab-section active">
+      <div class="nut-section">
+        <div class="nut-title">Precarga — el día antes</div>
+        <div class="meal-grid">
+          <div class="meal-card">
+            <div class="meal-name" style="color:var(--blue)">Desayuno</div>
+            <div class="meal-text">Avena con leche + plátano + 2–3 huevos revueltos. Base sólida, poca fibra.</div>
+          </div>
+          <div class="meal-card">
+            <div class="meal-name" style="color:var(--green)">Comida</div>
+            <div class="meal-text">Arroz o pasta (100–120 g seco) + pollo a la plancha. Sin salsas grasas ni ensaladas grandes.</div>
+          </div>
+          <div class="meal-card">
+            <div class="meal-name" style="color:var(--orange)">Merienda</div>
+            <div class="meal-text">Plátano + puñado de nueces o almendras. Snack calórico, no pesado.</div>
+          </div>
+          <div class="meal-card">
+            <div class="meal-name" style="color:var(--purple)">Cena</div>
+            <div class="meal-text">Boniato o patata + pescado blanco o tortilla de claras. Cenad antes de las 21h.</div>
+          </div>
+        </div>
+        <div class="hydration">
+          <span class="hydration-icon">💧</span>
+          <span><strong>Hidratación:</strong> mínimo 2,5–3 L de agua. Podéis añadir una isotónica por la tarde para cargar electrolitos.</span>
+        </div>
+        <div class="info-card">
+          <div class="ic-title">Suplementación opcional</div>
+          Si usáis creatina habitualmente, tomad la dosis de mantenimiento (3–5 g) con la comida. Nada nuevo hoy.
+        </div>
+        <div class="avoid-card">
+          <div class="av-title">Evitar hoy</div>
+          Alcohol, comida picante, frituras, lácteos en exceso, legumbres en gran cantidad. El intestino debe estar tranquilo mañana.
+        </div>
+      </div>
+    </div>
+
+    <!-- SABADO -->
+    <div id="nut-sabado" class="tab-section">
+      <div class="nut-section">
+        <div class="nut-title">Desayuno — 6:30–7:00h (2h antes del WOD 1)</div>
+        <div class="info-card">
+          Avena o tostadas con miel + plátano + 2 huevos. Fácil de digerir, carga de hidratos de absorción media-rápida. Sin grasas pesadas ni lácteos. Café si lo tomáis habitualmente.
+        </div>
+      </div>
+      <div class="nut-section">
+        <div class="nut-title">Entre WODs</div>
+        <div class="between-wods">
+          <div class="bw-title">Entre WOD 1 y WOD 2 (09:00–11:30h)</div>
+          Sin sólidos pesados. Fruta (plátano, dátiles, naranja) + agua con sales. Si hay más de 2h de margen: barrita de dátiles o arroz con miel en pequeña cantidad. Reponer glucógeno sin llenar el estómago.
+        </div>
+        <div class="between-wods">
+          <div class="bw-title">Entre WOD 2 y WOD 3 (13:30–15:30h)</div>
+          Aquí sí hay margen. Arroz con pollo o patata con atún — ración moderada, no copiosa. Sin grasas ni fibra alta. Gel o dátiles 30 min antes del WOD 3 si necesitáis un extra.
+        </div>
+      </div>
+      <div class="nut-section">
+        <div class="nut-title">Después del WOD 3 — recuperación</div>
+        <div class="info-card">
+          <div class="ic-title">Ventana de recuperación</div>
+          Batido de proteínas o pollo + arroz en cuanto podáis. Vuestra recuperación muscular empieza aquí y afecta directamente al rendimiento del domingo. Omega-3 o cúrcuma si los usáis.
+        </div>
+      </div>
+      <div class="hydration">
+        <span class="hydration-icon">💧</span>
+        <span><strong>Hidratación continua:</strong> mínimo 500 ml entre cada WOD. Si suáis mucho, isotónica después del WOD 2 y 3.</span>
+      </div>
+    </div>
+
+    <!-- DOMINGO -->
+    <div id="nut-domingo" class="tab-section">
+      <div class="nut-section">
+        <div class="nut-title">Desayuno — 2h antes del primer WOD</div>
+        <div class="info-card">
+          Igual que el sábado: avena o tostadas + plátano + huevos. Si el cuerpo está cargado y no tenéis hambre, al menos tomad un plátano y un café. El glucógeno del viernes y sábado aún trabaja para vosotros.
+        </div>
+      </div>
+      <div class="nut-section">
+        <div class="nut-title">Entre WODs</div>
+        <div class="between-wods">
+          <div class="bw-title">Entre WOD 4 y WOD 5</div>
+          Fruta o gel de carbohidratos + agua. Nada más. El estómago tiene que estar vacío para el sprint final.
+        </div>
+      </div>
+      <div class="nut-section">
+        <div class="nut-title">Post-competición</div>
+        <div class="info-card">
+          <div class="ic-title">Recuperación real</div>
+          Proteína + hidratos en la ventana de 30–60 min. Después, comida completa con grasas saludables. Hidratación extra el domingo por la noche. Baño de contraste o foam roller antes de dormir si podéis.
+        </div>
+      </div>
+      <div class="hydration">
+        <span class="hydration-icon">💧</span>
+        <span><strong>Recordad:</strong> el domingo el cuerpo estará más deshidratado. Empezad con al menos 500 ml de agua antes de cualquier alimento.</span>
+      </div>
+      <div class="avoid-card">
+        <div class="av-title">Mindset del último día</div>
+        Los depósitos no se cargan el domingo — eso ya está hecho. Hoy se ejecuta el plan. Confiad en el trabajo del viernes y el sábado.
+      </div>
+    </div>
+
+  </div><!-- /tab-nutrition -->
+
+</div><!-- /content -->
+
+<div class="footer">
+   <span>Creado por Unai Armendáriz Gacés</span>
+</div>
+
+<script>
+  function switchMain(tab, btn) {
+    document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#tab-strategy, #tab-nutrition').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  function switchDay(prefix, day, btn) {
+    const pills = document.getElementById(prefix + '-pills');
+    pills.querySelectorAll('.day-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const days = prefix === 'strat' ? ['sabado','domingo'] : ['viernes','sabado','domingo'];
+    days.forEach(d => {
+      const el = document.getElementById(prefix + '-' + d);
+      if (el) el.classList.remove('active');
+    });
+    const target = document.getElementById(prefix + '-' + day);
+    if (target) target.classList.add('active');
+  }
+
+  function toggleWod(header) {
+    const card = header.closest('.wod-card');
+    card.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
